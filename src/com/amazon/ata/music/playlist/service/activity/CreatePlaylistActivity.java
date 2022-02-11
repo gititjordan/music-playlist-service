@@ -1,14 +1,21 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.converters.ModelConverter;
+import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
 import com.amazon.ata.music.playlist.service.models.requests.CreatePlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.CreatePlaylistResult;
 import com.amazon.ata.music.playlist.service.models.PlaylistModel;
 import com.amazon.ata.music.playlist.service.dynamodb.PlaylistDao;
 
+import com.amazon.ata.music.playlist.service.util.MusicPlaylistServiceUtils;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.google.common.collect.Sets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
 
 /**
  * Implementation of the CreatePlaylistActivity for the MusicPlaylistService's CreatePlaylist API.
@@ -17,8 +24,12 @@ import org.apache.logging.log4j.Logger;
  */
 public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequest, CreatePlaylistResult> {
     private final Logger log = LogManager.getLogger();
-    private final PlaylistDao playlistDao;
+    private PlaylistDao playlistDao;
 
+
+    public CreatePlaylistActivity() {
+        //dasssss
+    }
     /**
      * Instantiates a new CreatePlaylistActivity object.
      *
@@ -27,6 +38,8 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
     public CreatePlaylistActivity(PlaylistDao playlistDao) {
         this.playlistDao = playlistDao;
     }
+
+
 
     /**
      * This method handles the incoming request by persisting a new playlist
@@ -45,8 +58,35 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
     public CreatePlaylistResult handleRequest(final CreatePlaylistRequest createPlaylistRequest, Context context) {
         log.info("Received CreatePlaylistRequest {}", createPlaylistRequest);
 
+        try {
+            MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getName());
+            MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getCustomerId());
+        } catch (InvalidAttributeValueException e) {
+            e.printStackTrace();
+        }
+
+        String playlistId = MusicPlaylistServiceUtils.generatePlaylistId();
+
+        // populate playlist object
+        Playlist playlistObject = new Playlist();
+        playlistObject.setId(playlistId);
+        playlistObject.setName(createPlaylistRequest.getName());
+        playlistObject.setCustomerId(createPlaylistRequest.getCustomerId());
+        //playlistObject.getSongCount();
+
+        playlistObject.setTags(Sets.newHashSet(createPlaylistRequest.getTags()));
+
+
+        // save playlist
+        try {
+            playlistDao.savePlaylist(playlistObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PlaylistModel playlistModel = new ModelConverter().toPlaylistModel(playlistObject);
         return CreatePlaylistResult.builder()
-                .withPlaylist(new PlaylistModel())
+                .withPlaylist(playlistModel)
                 .build();
     }
 }

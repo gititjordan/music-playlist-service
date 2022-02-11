@@ -6,11 +6,16 @@ import java.util.Objects;
 public class CreatePlaylistRequest {
     private String name;
     private String customerId;
+
+
+
+    private Integer songCount;
     private List<String> tags;
 
-    public CreatePlaylistRequest(String name, String customerId, List<String> tags) {
+    public CreatePlaylistRequest(String name, String customerId, Integer songCount, List<String> tags) {
         this.name = name;
         this.customerId = customerId;
+        this.songCount = songCount;
         this.tags = tags;
     }
 
@@ -33,6 +38,14 @@ public class CreatePlaylistRequest {
 
     public String getCustomerId() {
         return customerId;
+    }
+
+    public Integer getSongCount() {
+        return songCount;
+    }
+
+    public void setSongCount(Integer songCount) {
+        this.songCount = songCount;
     }
 
     public void setCustomerId(String customerId) {
