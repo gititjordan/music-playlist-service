@@ -2,6 +2,7 @@ package com.amazon.ata.music.playlist.service.activity;
 
 import com.amazon.ata.music.playlist.service.converters.ModelConverter;
 import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeException;
 import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
 import com.amazon.ata.music.playlist.service.models.requests.CreatePlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.CreatePlaylistResult;
@@ -15,7 +16,9 @@ import com.google.common.collect.Sets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Implementation of the CreatePlaylistActivity for the MusicPlaylistService's CreatePlaylist API.
@@ -28,7 +31,7 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
 
 
     public CreatePlaylistActivity() {
-        //dasssss
+
     }
     /**
      * Instantiates a new CreatePlaylistActivity object.
@@ -57,12 +60,21 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
     @Override
     public CreatePlaylistResult handleRequest(final CreatePlaylistRequest createPlaylistRequest, Context context) {
         log.info("Received CreatePlaylistRequest {}", createPlaylistRequest);
+        Set<String> tags = new HashSet<>(createPlaylistRequest.getTags());
+        tags.add(" ");
 
         try {
-            MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getName());
             MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getCustomerId());
-        } catch (InvalidAttributeValueException e) {
+        } catch (InvalidAttributeException e) {
             e.printStackTrace();
+            throw new InvalidAttributeValueException("Invalid ID entered." );
+
+        }
+        try {
+            MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getName());
+        } catch (InvalidAttributeException e) {
+            throw new InvalidAttributeValueException("Invalid Playlist name entered." );
+
         }
 
         String playlistId = MusicPlaylistServiceUtils.generatePlaylistId();
@@ -73,9 +85,7 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
         playlistObject.setName(createPlaylistRequest.getName());
         playlistObject.setCustomerId(createPlaylistRequest.getCustomerId());
         //playlistObject.getSongCount();
-
-        playlistObject.setTags(Sets.newHashSet(createPlaylistRequest.getTags()));
-
+        playlistObject.setTags(tags);
 
         // save playlist
         try {

@@ -24,7 +24,6 @@ public class PlaylistDao {
     public void savePlaylist(Playlist playlistObject) {
         DynamoDBMapper mapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient());
         mapper.save(playlistObject);
-
     }
 
     /**

@@ -14,13 +14,19 @@ public class ModelConverter {
      * @return the converted playlist
      */
     public PlaylistModel toPlaylistModel(Playlist playlist) {
-        ArrayList<String> tags = new ArrayList(playlist.getTags());
+       // ArrayList<String> tags = new ArrayList(playlist.getTags());
+//        for (String tag : tags) {
+//            if (tag == null );
+//            tag = " ";
+//        }
+
+
         return PlaylistModel.builder()
             .withId(playlist.getId())
                 .withCustomerId(playlist.getCustomerId())
                 .withName(playlist.getName())
                 //.withSongCount(playlist.getSongCount())
-                .withTags(tags)
+                //.withTags(tags)
             .build();
     }
 }

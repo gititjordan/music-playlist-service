@@ -1,81 +1,1 @@
-@startuml
-!pragma layout smetana
-
-class AlbumTrack {
--@DynamoDBHashKey asin : String
--@DynamoDBRangeKey trackNumber : Integer
-
-- albumName: String
-- songTitle: String
-}
-
-class AlbumTrackDao {
-dynamoDbMapper : DynamoDBMapper
-}
-
-class Playlist {
--@DynamoDBHashKey id : String
--name : String
--customerId : String
--songCount : Integer
-tags : Set<String>
--songList : List<AlbumTrack>
-}
-
-class PlaylistDao {
-dynamoDbMapper : DynamoDBMapper
-getPlaylist() : Playlist
-getPlaylist(requestedId : String)
-}
-
-class UpdatePlaylistActivity {
-handleRequest() : UpdatePlaylistResult
-handleRequest(UpdatePlaylistRequest)
-}
-
-class GetPlaylistSongsActivity {
-handleRequest() : GetPlaylistSongsResult
-handleRequest(GetPlaylistSongsRequest)
-}
-
-class GetPlaylistActivity {
-handleRequest() : GetPlaylistResult
-handleRequest(GetPlaylistRequest)
-}
-
-class CreatePlaylistActivity {
-handleRequest() : CreatePlaylistResult
-handleRequest(CreatePlaylistRequest)
-}
-
-class AddSongToPlaylistActivity {
-handleRequest() : AddSongToPlaylistResult
-handleRequest(AddSongToPlaylistRequest)
-}
-
-class AlbumTrackNotFoundException {
-
-}
-
-class InvalidAttributeValueException {
-
-}
-
-class PlaylistNotFoundException {
-
-}
-
- GetPlaylistSongsActivity o-- PlaylistDao
- AddSongToPlaylistActivity o-- AlbumTrackDao
- CreatePlaylistActivity o-- PlaylistDao
- AddSongToPlaylistActivity o-- PlaylistDao
- GetPlaylistActivity o-- PlaylistDao
- UpdatePlaylistActivity o-- PlaylistDao
- Playlist o-- AlbumTrack
-
-
-
-
-
-
-@enduml
+@startuml!pragma layout smetanaclass AlbumTrack {-@DynamoDBHashKey asin : String-@DynamoDBRangeKey trackNumber : Integer- albumName: String- songTitle: String}class AlbumTrackDao {dynamoDbMapper : DynamoDBMapper}class Playlist {-@DynamoDBHashKey id : String-name : String-customerId : String-songCount : Integertags : Set<String>-songList : List<AlbumTrack>}class PlaylistDao {dynamoDbMapper : DynamoDBMappergetPlaylist() : PlaylistgetPlaylist(requestedId : String)}class UpdatePlaylistActivity {handleRequest() : UpdatePlaylistResulthandleRequest(UpdatePlaylistRequest)}class GetPlaylistSongsActivity {handleRequest() : GetPlaylistSongsResulthandleRequest(GetPlaylistSongsRequest)}class GetPlaylistActivity {handleRequest() : GetPlaylistResulthandleRequest(GetPlaylistRequest)}class CreatePlaylistActivity {handleRequest() : CreatePlaylistResulthandleRequest(CreatePlaylistRequest)}class AddSongToPlaylistActeivity {handleRequest() : AddSongToPlaylistResulthandleRequest(AddSongToPlaylistRequest)}class AlbumTrackNotFoundException {}class InvalidAttributeValueException {}class PlaylistNotFoundException {}class InvalidAttributeChangeException {}class ExceptionCustom {} InvalidAttributeChangeException  --|> ExceptionCustom InvalidAttributeValueException --|> ExceptionCustom GetPlaylistSongsActivity o-- PlaylistDao AddSongToPlaylistActivity o-- AlbumTrackDao CreatePlaylistActivity o-- PlaylistDao AddSongToPlaylistActivity o-- PlaylistDao GetPlaylistActivity o-- PlaylistDao UpdatePlaylistActivity o-- PlaylistDao Playlist o-- AlbumTrack@enduml
