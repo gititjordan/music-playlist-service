@@ -1,15 +1,17 @@
 package com.amazon.ata.music.playlist.service.models;
 
+import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
+
 import java.util.List;
 import java.util.Objects;
 
 public class PlaylistModel {
+    Playlist playlist;
     private String id;
     private String name;
     private String customerId;
     private int songCount;
     private List<String> tags;
-
     public PlaylistModel() {
 
     }

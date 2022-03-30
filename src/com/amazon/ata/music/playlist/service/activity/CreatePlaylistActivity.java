@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,14 +31,13 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
     private PlaylistDao playlistDao;
 
 
-    public CreatePlaylistActivity() {
 
-    }
     /**
      * Instantiates a new CreatePlaylistActivity object.
      *
      * @param playlistDao PlaylistDao to access the playlists table.
      */
+    @Inject
     public CreatePlaylistActivity(PlaylistDao playlistDao) {
         this.playlistDao = playlistDao;
     }
@@ -67,13 +67,13 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
             MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getCustomerId());
         } catch (InvalidAttributeException e) {
             e.printStackTrace();
-            throw new InvalidAttributeValueException("Invalid ID entered." );
+            throw new InvalidAttributeValueException("Invalid ID entered.");
 
         }
         try {
             MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getName());
         } catch (InvalidAttributeException e) {
-            throw new InvalidAttributeValueException("Invalid Playlist name entered." );
+            throw new InvalidAttributeValueException("Invalid Playlist name entered.");
 
         }
 

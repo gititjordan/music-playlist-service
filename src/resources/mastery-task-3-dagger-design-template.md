@@ -60,8 +60,8 @@ your module, `DaoModule`, as indicated below. Use these names in
 your implementation as well)
 
 ```
-@______
-@______(______ = {______.class})
+@Singleton
+@Component(modules = {DaoModule.class})
 public interface ServiceComponent {
     ______ provide______();
 

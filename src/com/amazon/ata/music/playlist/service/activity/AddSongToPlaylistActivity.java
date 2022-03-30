@@ -1,5 +1,7 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.dependency.DaggerServiceComponent;
+import com.amazon.ata.music.playlist.service.dependency.ServiceComponent;
 import com.amazon.ata.music.playlist.service.models.requests.AddSongToPlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.AddSongToPlaylistResult;
 import com.amazon.ata.music.playlist.service.models.SongModel;
@@ -11,6 +13,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import java.util.Collections;
 
 /**
@@ -29,10 +32,12 @@ public class AddSongToPlaylistActivity implements RequestHandler<AddSongToPlayli
      * @param playlistDao PlaylistDao to access the playlist table.
      * @param albumTrackDao AlbumTrackDao to access the album_track table.
      */
+    @Inject
     public AddSongToPlaylistActivity(PlaylistDao playlistDao, AlbumTrackDao albumTrackDao) {
         this.playlistDao = playlistDao;
         this.albumTrackDao = albumTrackDao;
     }
+
 
     /**
      * This method handles the incoming request by adding an additional song
