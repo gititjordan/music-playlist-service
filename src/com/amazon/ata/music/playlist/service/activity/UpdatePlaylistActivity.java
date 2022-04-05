@@ -63,32 +63,35 @@ public class UpdatePlaylistActivity implements RequestHandler<UpdatePlaylistRequ
 
         Playlist playlistObj = new Playlist();
         String playlistIdRequest = updatePlaylistRequest.getId();
-        String customerIdRequest = updatePlaylistRequest.getCustomerId();
+        String name = updatePlaylistRequest.getName();
+        String custId = updatePlaylistRequest.getCustomerId();
 
         //If the playlist id to update is not found, throws PlaylistNotFoundException.
         try {
-            playlistDao.getPlaylist(playlistIdRequest);
+             playlistObj = playlistDao.getPlaylist(playlistIdRequest);
         } catch (PlaylistNotFoundException exception) {
             throw exception;
         }
 
-        /*If the customer ID or playlist name contains any of the invalid characters,
-         *throws an InvalidAttributeValueException else updates playlist name.
-         */
-        if (!MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getName()) ||
-                !MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getCustomerId())) {
-            throw new InvalidAttributeValueException(" is not a valid name");
-        } else {
-            playlistObj.setName(updatePlaylistRequest.getName());
-            playlistObj.setCustomerId(updatePlaylistRequest.getCustomerId());
+        //If the customer ID or playlist name contains any of the invalid characters,
+        //throws an InvalidAttributeValueException else updates playlist name.
+        if (!MusicPlaylistServiceUtils.isValidString(name) ||
+                !MusicPlaylistServiceUtils.isValidString(custId)) {
+            throw new InvalidAttributeValueException();
         }
-
-        /*If the customerIdRequest is different from the playlist customerId requesting to be changed
-         *throw InvalidAttributeException
-         */
-        if (!customerIdRequest.equals(playlistDao.getPlaylist(playlistIdRequest).getCustomerId())) {
+        if(!playlistObj.getCustomerId().equals(custId)) {
             throw new InvalidAttributeChangeException();
         }
+
+        playlistObj.setName(updatePlaylistRequest.getName());
+
+
+
+        //If the customerIdRequest is different from the playlist customerId requesting to be changed
+         //throw InvalidAttributeException
+//        if (!custId.equals(playlistDao.getPlaylist(playlistIdRequest).getCustomerId())) {
+//            throw new InvalidAttributeChangeException();
+//        }
 
         playlistDao.savePlaylist(playlistObj);
         PlaylistModel playlistModel = new ModelConverter().toPlaylistModel(playlistObj);

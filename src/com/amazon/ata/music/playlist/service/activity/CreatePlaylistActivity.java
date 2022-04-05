@@ -1,6 +1,7 @@
 package com.amazon.ata.music.playlist.service.activity;
 
 import com.amazon.ata.music.playlist.service.converters.ModelConverter;
+import com.amazon.ata.music.playlist.service.dynamodb.models.AlbumTrack;
 import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
 import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeException;
 import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
@@ -18,7 +19,9 @@ import org.apache.logging.log4j.Logger;
 
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,6 +32,8 @@ import java.util.Set;
 public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequest, CreatePlaylistResult> {
     private final Logger log = LogManager.getLogger();
     private PlaylistDao playlistDao;
+    private AlbumTrack albumTrack;
+
 
 
 
@@ -60,41 +65,45 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
     @Override
     public CreatePlaylistResult handleRequest(final CreatePlaylistRequest createPlaylistRequest, Context context) {
         log.info("Received CreatePlaylistRequest {}", createPlaylistRequest);
-        Set<String> tags = new HashSet<>(createPlaylistRequest.getTags());
-        tags.add(" ");
+
+        Playlist playlist = new Playlist();
+        Integer songCount = 0;
+        Set<String> tags = null;
+        List<AlbumTrack> songList = new ArrayList<>();
+        String name = createPlaylistRequest.getName();
+        String custId = createPlaylistRequest.getCustomerId();
+        String playlistId = MusicPlaylistServiceUtils.generatePlaylistId();
+
+        if (createPlaylistRequest.getTags() != null) {
+            tags = new HashSet<>(createPlaylistRequest.getTags());
+        }
 
         try {
-            MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getCustomerId());
+            MusicPlaylistServiceUtils.isValidString(custId);
         } catch (InvalidAttributeException e) {
             e.printStackTrace();
             throw new InvalidAttributeValueException("Invalid ID entered.");
-
         }
         try {
-            MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getName());
+            MusicPlaylistServiceUtils.isValidString(name);
         } catch (InvalidAttributeException e) {
             throw new InvalidAttributeValueException("Invalid Playlist name entered.");
-
         }
 
-        String playlistId = MusicPlaylistServiceUtils.generatePlaylistId();
+        playlist.setId(playlistId);
+        playlist.setName(name);
+        playlist.setCustomerId(custId);
+        playlist.setSongCount(songCount);
+        playlist.setSongList(songList);
+        playlist.setTags(tags);
 
-        // populate playlist object
-        Playlist playlistObject = new Playlist();
-        playlistObject.setId(playlistId);
-        playlistObject.setName(createPlaylistRequest.getName());
-        playlistObject.setCustomerId(createPlaylistRequest.getCustomerId());
-        //playlistObject.getSongCount();
-        playlistObject.setTags(tags);
-
-        // save playlist
         try {
-            playlistDao.savePlaylist(playlistObject);
+            playlistDao.savePlaylist(playlist);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        PlaylistModel playlistModel = new ModelConverter().toPlaylistModel(playlistObject);
+        PlaylistModel playlistModel = new ModelConverter().toPlaylistModel(playlist);
         return CreatePlaylistResult.builder()
                 .withPlaylist(playlistModel)
                 .build();

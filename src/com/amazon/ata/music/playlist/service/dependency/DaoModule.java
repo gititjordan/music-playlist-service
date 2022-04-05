@@ -12,6 +12,7 @@ import javax.inject.Singleton;
 
 @Module
 public class DaoModule {
+    DynamoDBMapper mapper;
 
     @Provides
     @Singleton
@@ -29,7 +30,10 @@ public class DaoModule {
     @Provides
     @Singleton
     public DynamoDBMapper provideDynamoDBMapper() {
-        return new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_WEST_2));
-    }
+        if (mapper == null) {
+           mapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_WEST_2));
+        }
+        return mapper;
+        }
 
 }

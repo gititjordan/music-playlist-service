@@ -1,5 +1,6 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.exceptions.PlaylistNotFoundException;
 import com.amazon.ata.music.playlist.service.models.requests.GetPlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.GetPlaylistResult;
 import com.amazon.ata.music.playlist.service.models.PlaylistModel;
@@ -23,7 +24,7 @@ public class GetPlaylistActivity implements RequestHandler<GetPlaylistRequest, G
     private final Logger log = LogManager.getLogger();
     private final PlaylistDao playlistDao;
 
-    /**
+    /**a
      * Instantiates a new GetPlaylistActivity object.
      *
      * @param playlistDao PlaylistDao to access the playlist table.
